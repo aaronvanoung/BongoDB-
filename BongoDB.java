@@ -149,7 +149,7 @@ public class BongoDB
 
     public static Connection getConnection() 
     {
-        String url = "jdbc:sqlite:/Users/aaronvanoung/Desktop/Fall2019/Database/Project2/BongoDB.db";
+        String url = "jdbc:sqlite:/Users/nikkosolon/UCM/Semester7/CSE111/Project/3/git/BongoDB-/BongoDB.db";
         try 
         {
             System.out.println("Establishing Connection");
