@@ -147,13 +147,14 @@ public class BongoDB
         return s;
     }
 
-    private static Connection getConnection() {
+    public static Connection getConnection() 
+    {
         String url = "jdbc:sqlite:/Users/aaronvanoung/Desktop/Fall2019/Database/Project2/BongoDB.db";
         try 
         {
             System.out.println("Establishing Connection");
             return DriverManager.getConnection(url);
-            System.out.println("Connected");
+
         } catch (SQLException e) 
         {
             System.out.println("Failed to get Connection");
