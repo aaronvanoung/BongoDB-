@@ -5,7 +5,7 @@ public class BongoDB
 {
 
     private static Connection c = null;
-    private static Statement stat = null;
+    private static Statement s = null;
     private static boolean connected = false;
     private static boolean closing = false;
     private static int MenuCode = 1;
@@ -15,7 +15,7 @@ public class BongoDB
     {
         c = getConnection();
         Scanner input = new Scanner(System.in);
-        displayMenu(1);
+        displayMenu(1000);
         runQuery(input.nextLine());
         closeConnection();
     }
@@ -32,36 +32,14 @@ public class BongoDB
 
         else if (MenuPage == 2)
         {
-            try
-            {
                 System.out.println("----- CUSTOMER LOGIN -----");
-                System.out.println("Please enter username: ");
-                String custUserIn = input.nextLine();
-                //System.out.println("Please enter password: ");
-                //String custPassIn = input.next();
-                String Q_custUser = "SELECT * FROM customer WHERE c_username = " + custUserIn + ";";
-                //String Q_custPass = "SELECT COUNT(*) FROM customer WHERE c_password = " + custPassIn + ";";
-                ResultSet Query4P1 = stat.executeQuery(Q_custUser);
-                //ResultSet Query4P2 = stat.executeQuery(Q_custPass);
-                while(Query4P1.next())
-			{
-				
-				System.out.println("\nIT EXISTS\n");
-
-			}
-            
-            }
-			catch(SQLException e) 
-        	{
-				System.out.println("\nCould not find username\n");
-                e.printStackTrace();
-			}
+                System.out.println("Please enter username (Use \" \") : ");
         }
 
         else if (MenuPage == 3) 
         {
             System.out.println("----- CUSTOMER MODE -----");
-            System.out.println("\t SearchInCategory: List all product from selected category");
+            System.out.println("\t listAll: List all product from selected category");
 
         } 
         
@@ -70,6 +48,7 @@ public class BongoDB
             System.out.println("----- ADMIN MODE -----");
             System.out.println("\t createAll: To create all tables");
             System.out.println("\t create table: To create a table");
+            System.out.println("\t CustInfo : Returns all of a customers infomation");
         }
 
         System.out.print("$ ");
@@ -83,19 +62,21 @@ public class BongoDB
             case "connect":
                 c = getConnection();
                 break;
-            
+            case "listAll":
+                listAllProd();
+                break;
+            case "CustInfo":
+                CustInfo();
+                break;
             case "customer":
                 //displayMenu(2);
                 if (MenuCode == 1) 
                 {
                     MenuCode = 2;
                     displayMenu(2);
-                } else if (MenuCode == 2){
-                    System.out.println("You're already a user");
-                    System.out.print("$ ");
-                    runQuery(input.nextLine());
+                    customerlogin();
                 }
-            
+                break;
             case "mng":
                 if (MenuCode == 1) {
                     MenuCode = 1000;
@@ -120,6 +101,85 @@ public class BongoDB
         }
     }
 
+    private static void customerlogin()
+    {
+          try
+            {
+                Statement s = c.createStatement();
+                String custUserIn = input.nextLine();
+                System.out.println("Please enter password: ");
+                String custPassIn = input.next();
+                String Q_custUser = "SELECT * FROM customer WHERE c_username = " + custUserIn + ";";
+                String Q_custPass = "SELECT * FROM customer WHERE c_password = " + custPassIn + "AND c_username = " + custUserIn + ";";
+                ResultSet Query4P1 = s.executeQuery(Q_custUser);
+                ResultSet Query4P2 = s.executeQuery(Q_custPass);
+                while(Query4P1.next())
+			{
+                MenuCode = 2;
+				System.out.println("\nUsername exist\n");
+			}
+              while(Query4P2.next())
+			{
+				System.out.println("\nWelcome\n");
+			}
+
+            Query4P1.close();
+            Query4P2.close();
+            displayMenu(3);
+            }
+			catch(SQLException e) 
+        	{
+				System.out.println("\nWrong information\n");
+                e.printStackTrace();
+			}
+    }
+    private static void CustInfo(){
+        s = getStatement();
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            String q5String = "SELECT * FROM customer WHERE c_name = 'Aaron';";
+            ResultSet q5 = s.executeQuery(q5String);
+            System.out.println("----- Customer Information -----\n");
+            while(q5.next())
+            {
+                System.out.println(q5.getString("c_name") + " " + q5.getString("c_address") + " " + q5.getString("c_phone") + " " + q5.getString("c_username") + " " + q5.getString("c_email") + " " + q5.getString("c_password"));
+
+            }
+            q5.close();
+            displayMenu(1000);
+        }
+        catch(SQLException e) 
+        {
+            System.out.println("\nWrong information\n");
+            e.printStackTrace();
+        }
+    }
+
+    private static void listAllProd() 
+	{
+        s = getStatement();
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            String q5String = "SELECT * FROM product;";
+            ResultSet q5 = s.executeQuery(q5String);
+            System.out.println("----- PRODUCT LIST -----\n");
+            while(q5.next())
+            {
+                System.out.println(q5.getString("p_productname"));
+
+            }
+            q5.close();
+        }
+        catch(SQLException e) 
+        {
+            System.out.println("\nWrong information\n");
+            e.printStackTrace();
+        }
+	}
 
     private static PreparedStatement prepStatement(String sql) {
 
@@ -147,12 +207,12 @@ public class BongoDB
         return s;
     }
 
-    public static Connection getConnection() 
+    private static Connection getConnection() 
     {
         String url = "jdbc:sqlite:/Users/nikkosolon/UCM/Semester7/CSE111/Project/3/git/BongoDB-/BongoDB.db";
         try 
         {
-            System.out.println("Establishing Connection");
+            System.out.println("\nEstablishing Connection...");
             return DriverManager.getConnection(url);
 
         } catch (SQLException e) 
