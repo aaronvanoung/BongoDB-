@@ -40,13 +40,18 @@ public class BongoDB
         {
             System.out.println("----- CUSTOMER MODE -----");
             System.out.println("\t listAll: List all product from selected category");
-
+            System.out.println("\t priceOver: List all product greater than or equal to");
+            System.out.println("\t priceUnder: List all product greater than or equal to");
         } 
-        
+        else if (MenuPage == 4)
+        {
+            System.out.println("----- ADMIN LOGIN -----");
+            System.out.println("Please enter Admin username (Use \" \") : ");
+        }
         else if (MenuPage == 1000)
         {
             System.out.println("----- ADMIN MODE -----");
-            System.out.println("\t createAll: To create all tables");
+            System.out.println("\t CustInfo: Returns all customer information");
             System.out.println("\t create table: To create a table");
         }
 
@@ -64,6 +69,15 @@ public class BongoDB
             case "listAll":
                 listAllProd();
                 break;
+            case "priceOver":
+                listPriceOver();
+                break;
+            case "CustInfo":
+                CustInfo();
+                break;
+            case "priceUnder":
+                listPriceUnder();
+                break;
             case "customer":
                 //displayMenu(2);
                 if (MenuCode == 1) 
@@ -73,15 +87,13 @@ public class BongoDB
                     customerlogin();
                 }
                 break;
-            case "mng":
-                if (MenuCode == 1) {
-                    MenuCode = 1000;
-                    displayMenu(1000);
-                } else if (MenuCode == 1000) {
-                    System.out.println("Log out first using command logout");
-                    System.out.print("$ ");
+            case "admin":
+                if (MenuCode == 1) 
+                {
+                    MenuCode = 4;
+                    displayMenu(4);
+                    adminlogin();
                 }
-
                     break;
             case "logout":
                 MenuCode = 1;
@@ -94,6 +106,30 @@ public class BongoDB
         if (MenuCode != 0)
         {
             runQuery(input.nextLine());
+        }
+    }
+
+    private static void CustInfo(){
+        s = getStatement();
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            String q5String = "SELECT * FROM customer WHERE c_name = 'Aaron';";
+            ResultSet q5 = s.executeQuery(q5String);
+            System.out.println("----- Customer Information -----\n");
+            while(q5.next())
+            {
+                System.out.println(q5.getString("c_name") + " " + q5.getString("c_address") + " " + q5.getString("c_phone") + " " + q5.getString("c_username") + " " + q5.getString("c_email") + " " + q5.getString("c_password"));
+
+            }
+            q5.close();
+            displayMenu(1000);
+        }
+        catch(SQLException e) 
+        {
+            System.out.println("\nWrong information\n");
+            e.printStackTrace();
         }
     }
 
@@ -130,6 +166,39 @@ public class BongoDB
 			}
     }
 
+    private static void adminlogin()
+    {
+          try
+            {
+                Statement s = c.createStatement();
+                String adminUserIn = input.nextLine();
+                System.out.println("Please enter password: ");
+                String adminPassIn = input.next();
+                String Q_AdUser = "SELECT * FROM admin WHERE a_username = " + adminUserIn + ";";
+                String Q_AdPass = "SELECT * FROM admin WHERE a_password = " + adminPassIn + "AND a_username = " + adminUserIn + ";";
+                ResultSet Q1 = s.executeQuery(Q_AdUser);
+                ResultSet Q2 = s.executeQuery(Q_AdPass);
+                while(Q1.next())
+			{
+                 MenuCode = 4;
+				System.out.println("\nUsername exist\n");
+			}
+              while(Q2.next())
+			{
+				System.out.println("\nWelcome\n");
+			}
+
+            Q1.close();
+            Q2.close();
+            displayMenu(1000);
+            }
+			catch(SQLException e) 
+        	{
+				System.out.println("\nWrong information\n");
+                e.printStackTrace();
+			}
+    }
+
     private static void listAllProd() 
 	{
         s = getStatement();
@@ -146,10 +215,63 @@ public class BongoDB
 
             }
             q5.close();
+            displayMenu(3);
         }
         catch(SQLException e) 
         {
             System.out.println("\nWrong information\n");
+            e.printStackTrace();
+        }
+	}
+
+    private static void listPriceOver() 
+	{
+        s = getStatement();
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            System.out.println("Please input price: \n");
+            String PriceInput = input.next();
+            String q5String = "SELECT DISTINCT(p_productname),p_price FROM product WHERE p_price >= " + PriceInput + " ORDER BY p_price ASC;";
+            ResultSet p = s.executeQuery(q5String);
+            System.out.println("----- PRODUCT LIST OVER " + PriceInput + "-----\n");
+            while(p.next())
+            {
+                System.out.print(p.getString("p_productname") + "\t");
+                System.out.println("$"+p.getString("p_price"));
+            }
+            p.close();
+            displayMenu(3);
+        }
+        catch(SQLException e) 
+        {
+            e.printStackTrace();
+        }
+	}
+
+    private static void listPriceUnder() 
+	{
+        s = getStatement();
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            System.out.println("Please input price: \n");
+            String PriceUnderInput = input.next();
+            String Q_in = "SELECT DISTINCT(p_productname),p_price FROM product WHERE p_price <= " + PriceUnderInput + " ORDER BY p_price DESC;";
+            ResultSet p = s.executeQuery(Q_in);
+            System.out.println("----- PRODUCT LIST UNDER " + PriceUnderInput + "-----\n");
+            while(p.next())
+            {
+                System.out.print(p.getString("p_productname") + "\t");
+                System.out.println("$"+p.getString("p_price"));
+            }
+            p.close();
+            displayMenu(3);
+        }
+        catch(SQLException e) 
+        {
             e.printStackTrace();
         }
 	}
