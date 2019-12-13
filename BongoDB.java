@@ -15,7 +15,7 @@ public class BongoDB
     {
         c = getConnection();
         Scanner input = new Scanner(System.in);
-        displayMenu(3);
+        displayMenu(1000);
         runQuery(input.nextLine());
         closeConnection();
     }
@@ -55,6 +55,7 @@ public class BongoDB
             System.out.println("----- ADMIN MODE -----");
             System.out.println("\t CustInfo: Returns all customer information");
             System.out.println("\t deleteCart: Delete Cart");
+            System.out.println("\t addcust: Add new customer");
         }
 
         System.out.print("$ ");
@@ -70,6 +71,9 @@ public class BongoDB
                 break;
             case "search":
                 Search();
+                break;
+            case "addcust":
+                addcust();
                 break;
             case "listAll":
                 listAllProd();
@@ -119,6 +123,47 @@ public class BongoDB
             runQuery(input.nextLine());
         }
     }
+
+    private static void addcust() 
+	{
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            System.out.println("Please input new customer ID: \n");
+            String IDInput = input.next();
+            System.out.println("Please input new customer name: \n");
+            String NameInput = input.next();
+            System.out.println("Please input new customer address: \n");
+            String addyInput = input.next();
+            System.out.println("Please input new customer phone number: \n");
+            String NumInput = input.next();
+            System.out.println("Please input new customer username: \n");
+            String usernameInput = input.next();
+            System.out.println("Please input new customer email: \n");
+            String EmailInput = input.next();
+            System.out.println("Please input new customer password: \n");
+            String PassInput = input.next();
+            String QS_in = "INSERT INTO customer(c_custID, c_name, c_address, c_phone, c_username, c_email, c_password) VALUES (" + IDInput + "," + NameInput + "," + addyInput + "," + NumInput + ","+ usernameInput + "," + EmailInput + "," + PassInput + ");";
+            ResultSet Qp = s.executeQuery(QS_in);
+            System.out.println("----- New Customer-----\n");
+            while(Qp.next())
+            {
+                System.out.print(Qp.getString("c_custID"));
+                System.out.print("\t$"+Qp.getString("c_name"));
+                System.out.print("\t$"+Qp.getString("c_address"));
+                System.out.print("\t$"+Qp.getString("c_phone"));
+                System.out.print("\t$"+Qp.getString("c_username"));
+                System.out.print("\t$"+Qp.getString("c_email"));
+            }
+            Qp.close();
+            displayMenu(3);
+        }
+        catch(SQLException e) 
+        {
+            e.printStackTrace();
+        }
+	}
 
     private static void Search() 
 	{
