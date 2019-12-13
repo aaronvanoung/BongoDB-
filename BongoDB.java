@@ -15,7 +15,7 @@ public class BongoDB
     {
         c = getConnection();
         Scanner input = new Scanner(System.in);
-        displayMenu(1);
+        displayMenu(3);
         runQuery(input.nextLine());
         closeConnection();
     }
@@ -42,17 +42,19 @@ public class BongoDB
             System.out.println("\t listAll: List all product from selected category");
             System.out.println("\t priceOver: List all product greater than or equal to");
             System.out.println("\t priceUnder: List all product greater than or equal to");
+            System.out.println("\t GreattoLeast: List all product greatest to least");
+            System.out.println("\t search: List all product in category");
         } 
         else if (MenuPage == 4)
         {
             System.out.println("----- ADMIN LOGIN -----");
-            System.out.println("Please enter Admin username (Use \" \") : ");
+            System.out.println("\tPlease enter Admin username (Use \" \") : ");
         }
         else if (MenuPage == 1000)
         {
             System.out.println("----- ADMIN MODE -----");
             System.out.println("\t CustInfo: Returns all customer information");
-            System.out.println("\t create table: To create a table");
+            System.out.println("\t deleteCart: Delete Cart");
         }
 
         System.out.print("$ ");
@@ -66,8 +68,14 @@ public class BongoDB
             case "connect":
                 c = getConnection();
                 break;
+            case "search":
+                Search();
+                break;
             case "listAll":
                 listAllProd();
+                break;
+            case "GreattoLeast":
+                GreattoLease();
                 break;
             case "priceOver":
                 listPriceOver();
@@ -77,6 +85,9 @@ public class BongoDB
                 break;
             case "priceUnder":
                 listPriceUnder();
+                break;
+            case "deleteCart":
+                DeleteCart();
                 break;
             case "customer":
                 //displayMenu(2);
@@ -108,6 +119,86 @@ public class BongoDB
             runQuery(input.nextLine());
         }
     }
+
+    private static void Search() 
+	{
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            System.out.println("Please input name of category: \n");
+            String categoryName = input.next();
+            String s_prod = "SELECT p_productname, p_price, p_color FROM product,category WHERE ctg_categoryID = p_categoryID AND ctg_categoryname = " + categoryName + ";";
+
+            ResultSet searchp = s.executeQuery(s_prod);
+            System.out.println("----- PRODUCTS FROM BAGS-----\n");
+            while(searchp.next())
+            {
+                System.out.print(searchp.getString("p_productname"));
+                System.out.print("\t$"+searchp.getString("p_price"));
+                System.out.println("\t"+searchp.getString("p_color"));
+
+            }
+            searchp.close();
+            displayMenu(3);
+        }
+        catch(SQLException e) 
+        {
+            System.out.println("\nWrong information\n");
+            e.printStackTrace();
+        }
+	}
+
+     private static void DeleteCart() 
+	{
+
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            System.out.println("Please input cart ID to Delete: \n");
+            String CartInput = input.next();
+            String CartString = "DELETE FROM cart WHERE ct_cartID =" + CartInput +";";
+            ResultSet cartS = s.executeQuery(CartString);
+            while(cartS.next())
+            {
+                System.out.println("Deleting Cart...");
+                System.out.println("Deleted");
+            }
+            cartS.close();
+            displayMenu(3);
+        }
+        catch(SQLException e) 
+        {
+            e.printStackTrace();
+        }
+	}
+
+    private static void GreattoLease() 
+	{
+        s = getStatement();
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            String GtoL = "SELECT p_productname, p_price FROM product ORDER BY p_price DESC;";
+            ResultSet Qgtol = s.executeQuery(GtoL);
+            System.out.println("----- PRODUCT LIST GREATEST TO LEAST-----\n");
+            while(Qgtol.next())
+            {
+                System.out.print(Qgtol.getString("p_productname"));
+                System.out.println("\t$"+Qgtol.getString("p_price"));
+
+            }
+            Qgtol.close();
+            displayMenu(3);
+        }
+        catch(SQLException e) 
+        {
+            System.out.println("\nWrong information\n");
+            e.printStackTrace();
+        }
+	}
 
     private static void CustInfo(){
         s = getStatement();
