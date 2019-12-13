@@ -15,7 +15,7 @@ public class BongoDB
     {
         c = getConnection();
         Scanner input = new Scanner(System.in);
-        displayMenu(1000);
+        displayMenu(1);
         runQuery(input.nextLine());
         closeConnection();
     }
