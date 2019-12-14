@@ -59,6 +59,7 @@ public class BongoDB
             System.out.println("\t addAdmin: update Customer username");
             System.out.println("\t listStore: list all store");
             System.out.println("\t deleteStore: delete a store");
+            System.out.println("\t AdminInfo: Returns all Admin information");
         }
 
         System.out.print("$ ");
@@ -74,6 +75,9 @@ public class BongoDB
                 break;
             case "search":
                 Search();
+                break;
+            case "AdminInfo":
+                AdminInfo();
                 break;
             case "deleteStore":
                 deleteStore();
@@ -136,6 +140,30 @@ public class BongoDB
         }
     }
 
+    private static void AdminInfo(){
+        s = getStatement();
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            String qAString = "SELECT * FROM admin WHERE a_name = 'nikko';";
+            ResultSet qA5 = s.executeQuery(qAString);
+            System.out.println("----- ADMIN INFORMATION -----\n");
+            while(qA5.next())
+            {
+                System.out.println(qA5.getString("a_name") + " " + qA5.getString("a_address") + " " + qA5.getString("a_phone") + " " + qA5.getString("a_username") + " " + qA5.getString("a_email") + " " + qA5.getString("a_password"));
+
+            }
+            qA5.close();
+            displayMenu(1000);
+        }
+        catch(SQLException e) 
+        {
+            System.out.println("\nWrong information\n");
+            e.printStackTrace();
+        }
+    }
+
     private static void deleteStore() 
 	{
 
@@ -153,7 +181,7 @@ public class BongoDB
                 System.out.println("Deleted");
             }
             SString.close();
-            displayMenu(4);
+            displayMenu(1000);
         }
         catch(SQLException e) 
         {
@@ -177,7 +205,7 @@ public class BongoDB
 
             }
             qList.close();
-            displayMenu(4);
+            displayMenu(1000);
         }
         catch(SQLException e) 
         {
@@ -222,7 +250,7 @@ public class BongoDB
                 System.out.print("\t$"+QA.getString("a_password"));
             }
             QA.close();
-            displayMenu(4);
+            displayMenu(1000);
         }
         catch(SQLException e) 
         {
@@ -264,7 +292,7 @@ public class BongoDB
                 System.out.print("\t$"+Qp.getString("c_email"));
             }
             Qp.close();
-            displayMenu(3);
+            displayMenu(1000);
         }
         catch(SQLException e) 
         {
