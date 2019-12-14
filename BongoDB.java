@@ -56,7 +56,8 @@ public class BongoDB
             System.out.println("\t CustInfo: Returns all customer information");
             System.out.println("\t deleteCart: Delete Cart");
             System.out.println("\t addcust: Add new customer");
-             System.out.println("\t addAdmin: update Customer username");
+            System.out.println("\t addAdmin: update Customer username");
+            System.out.println("\t listStore: list all store");
         }
 
         System.out.print("$ ");
@@ -72,6 +73,9 @@ public class BongoDB
                 break;
             case "search":
                 Search();
+                break;
+            case "listStore":
+                listStore();
                 break;
             case "addAdmin":
                 addAdmin();
@@ -127,6 +131,31 @@ public class BongoDB
             runQuery(input.nextLine());
         }
     }
+
+    private static void listStore() 
+	{
+        s = getStatement();
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            String qListString = "SELECT s_storename FROM store;";
+            ResultSet qList = s.executeQuery(qListString);
+            System.out.println("----- STORE LIST -----\n");
+            while(qList.next())
+            {
+                System.out.println(qList.getString("p_productname"));
+
+            }
+            qList.close();
+            displayMenu(4);
+        }
+        catch(SQLException e) 
+        {
+            System.out.println("\nWrong information\n");
+            e.printStackTrace();
+        }
+	}
 
     private static void addAdmin() 
 	{
