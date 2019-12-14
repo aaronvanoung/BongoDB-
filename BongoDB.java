@@ -58,6 +58,7 @@ public class BongoDB
             System.out.println("\t addcust: Add new customer");
             System.out.println("\t addAdmin: update Customer username");
             System.out.println("\t listStore: list all store");
+            System.out.println("\t deleteStore: delete a store");
         }
 
         System.out.print("$ ");
@@ -73,6 +74,9 @@ public class BongoDB
                 break;
             case "search":
                 Search();
+                break;
+            case "deleteStore":
+                deleteStore();
                 break;
             case "listStore":
                 listStore();
@@ -131,6 +135,31 @@ public class BongoDB
             runQuery(input.nextLine());
         }
     }
+
+    private static void deleteStore() 
+	{
+
+        System.out.println("\n");
+        try
+        {
+            Statement s = c.createStatement();
+            System.out.println("Please input store ID to Delete: \n");
+            String Store = input.next();
+            String StString = "DELETE FROM store WHERE s_storeID =" + Store +";";
+            ResultSet SString = s.executeQuery(StString);
+            while(SString.next())
+            {
+                System.out.println("Deleting Cart...");
+                System.out.println("Deleted");
+            }
+            SString.close();
+            displayMenu(4);
+        }
+        catch(SQLException e) 
+        {
+            e.printStackTrace();
+        }
+	}
 
     private static void listStore() 
 	{
@@ -272,7 +301,7 @@ public class BongoDB
         }
 	}
 
-     private static void DeleteCart() 
+    private static void DeleteCart() 
 	{
 
         System.out.println("\n");
